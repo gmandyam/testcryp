@@ -10,22 +10,25 @@
       ,   editors: [
          {   name:       "Giridhar Mandyam"
                 ,   company:    "Qualcomm Innovation Center, Inc"
-                ,   companyURL: "http://www.qualcomm.com/about/businesses/quicinc" }
+                ,   companyURL: "http://www.qualcomm.com/about/businesses/quicinc" },
+         {   name:       "Stephen Li"
+                ,   company:    "Qualcomm Atheros, Inc"
+                ,   companyURL: "http://www.qualcomm.com/about/businesses/qca" }
           ]
       ,   edDraftURI:   "http://gmandyam.github.com/enhanced-geolocation"
       ,   previousURI:   "http://gmandyam.github.com/enhanced-geolocation"
       ,   copyrightStart: 2012
       ,   noIDLIn:      true
-      ,   wg:           "Systems Applications Working Group"
-      ,   wgURI:        "http://www.w3.org/2012/sysapps/"
-      ,   wgPublicList: "public-sysapps"
+      ,   wg:           "Geolocation Working Group"
+      ,   wgURI:        "http://www.w3.org/2008/geolocation/"
+      ,   wgPublicList: "public-geolocation"
       ,   wgPatentURI:  "XXX"
       ,   isRecTrack:   false
       ,   isNoTrack:    true
       ,   format:       'markdown'
       };
     </script>
-    <script src='./respec.js' class='remove' async></script>
+    <script src='https://www.w3.org/Tools/respec/respec-w3c-common.js' class='remove' async></script>
   </head>
   <body>
     <section id='sotd'>
@@ -45,23 +48,16 @@
     --------------
     <dl title='partial interface Geolocation' class='idl'>
     <dd>partial interface Geolocation</dd>
-    <dt>void getCurrentProximityStatus(in CurrentProximityCallback successCallback, in WatchProximitySettings settings, in optional PositionErrorCallback errorCallback, in optional PositionOptions options)</dt>
-    <dd>The <code>getCurrentProximityStatus()</code> method takes up to three arguments. When called, it must immediately return and then asynchronously attempt to obtain the current location of the device and compare it to the geofence boundaries provided in <code>settings</code>. 
-    If the attempt is successful, the successCallback must be invoked with a new ProximityState object, reflecting the current location of the device with respect to the geofence. 
+    <dt>void GetCurrentProximity(in ProximityCallback successCallback, in WatchProximitySettings settings, in optional PositionErrorCallback errorCallback, in optional PositionOptions options)</dt>
+    <dd>The <code>GetCurrentProximity()</code> method takes up to four arguments. When called, it must immediately return and then asynchronously attempt to obtain the current location of the device and compare it to the geofence boundaries provided in <code>settings</code>. 
+    If the attempt is successful, the successCallback must be invoked (i.e. the <code>handleEvent()</code> operation must be invoked on the callback object) with a new Position object and a new ProximityState object, reflecting the current location of the device with respect to the geofence. 
     If the attempt fails, the errorCallback must be invoked with a new PositionError object, reflecting the reason for the failure.</dd>
     <dt>long watchProximity(in ProximityCallback successCallback, in WatchProximitySettings settings, in optional PositionErrorCallback errorCallback, in optional PositionOptions options)</dt>
-    <dd>The <code>watchProximity()</code> method takes up to three arguments. When called, it must immediately return a long value that uniquely identifies a watch operation and then asynchronously start the watch operation. 
-    This operation must first attempt to obtain the current proximity status of the device. If the attempt is successful, the successCallback must be invoked (i.e. the <code>handleEvent()</code> operation must be called on the callback object) with a new Position object, reflecting the current location of the device. If the attempt fails, the errorCallback must be invoked with a new PositionError object, reflecting the reason for the failure. 
+    <dd>The <code>watchProximity()</code> method takes up to four arguments. When called, it must immediately return a long value that uniquely identifies a watch operation and then asynchronously start the watch operation. 
+    This operation must first attempt to obtain the current proximity status of the device. If the attempt is successful, the successCallback must be invoked (i.e. the <code>handleEvent()</code> operation must be invoked on the callback object) with a new Position object and a new ProximityState object, reflecting the current location of the device. If the attempt fails, the errorCallback must be invoked with a new PositionError object, reflecting the reason for the failure. 
     The watch operation then must continue to monitor the position of the device and invoke the appropriate callback every time the position changes sufficiently so that a breach of the geofence described in <code>settings</code> occurs. The watch operation must continue until the <code>clearWatch</code> method as defined in [[!GEOLOCATION-API]] is called with the corresponding identifier.</dd>
-    </dl>      
+    </dl>    
     
-    <code>CurrentProximityCallback</code>
-    -------
-    <dl title='[Callback=FunctionOnly, NoInterfaceObject] interface CurrentProximityCallback' class='idl'>
-    <dt>void handleEvent(in Position position, in ProximityState proximityState)</dt>
-    <dd>The <code>handleEvent()</code> function of a <code>CurrentProximityCallback</code> callback function <em title="must" class="rfc2119">must</em> be passed new <code>Position</code> and <code>ProximityState</code> objects when the <code>getCurrentProximity()</code> method is called successfully.</dd>
-    </dl> 
-        
     <code>ProximityCallback</code>
     -------
     <dl title='[Callback=FunctionOnly, NoInterfaceObject] interface ProximityCallback' class='idl'>
@@ -70,17 +66,33 @@
     has been determined to occur.</dd>
     </dl> 
     
-    
     <code>WatchProximitySettings</code>
     -------
-    <p>This interface defines a circular geofence with a centroid and radius.</p>
-    <dl title='[Callback, NoInterfaceObject] interface WatchProximitySettings' class='idl'>
-    <dt>attribute double latitude</dt>
-    <dd>Latitude of centroid for geofence</dd>
-    <dt>attribute double longitude</dt>
-    <dd>Longitude of centroid for geofence</dd>
-    <dt>attribute double radius</dt>
-    <dd>Radius of geofence in meters</dd>
+    <p>This dictionary defines a circular geofence with a centroid and radius.</p>
+    <dl title='dictionary WatchProximitySettings' class='idl'>
+    <dt>double latitude</dt>
+    <dd>Latitude of centroid for geofence.  If not included, then current location latitude is used.</dd>
+    <dt>double longitude</dt>
+    <dd>Longitude of centroid for geofence.  If not included, then current location longitude is used.</dd>
+    <dt>double radius</dt>
+    <dd>Radius of geofence in meters.  If not included and no <i>geofenceOption</i> is provided, then the implementation will use a default value.</dd>
+    <dt>Position position</dt>
+    <dd>An object describing the position of the desired centroid.   If included, the implementation must define as the geofence centroid the location represented by this object. This setting overrides both <code>latitude</code> amd <code>longitude</code>.</dd>
+    <dt>GeofenceOption geofenceOption</dt>
+    <dd>Option for setting non-circular geofence.  If <i>radius</i> is provided then the implementation will ignore.</dd>
+    </dl>
+
+    <code>GeofenceOption</code>
+    -------
+    <dl title='enum GeofenceOption' class='idl'>
+    <dt>city</dt>
+    <dd>Option for setting geofence for roughly the scale of the a city with respect to the specified centroid</dd>
+    <dt>block</dt>
+    <dd>Option for setting geofence for roughly the scale of the a street block with respect to the specified centroid</dd>
+    <dt>building</dt>
+    <dd>Option for setting geofence for roughly the scale of the a building with respect to the specified centroid</dd>
+    <dt>room</dt>
+    <dd>Option for setting geofence for roughly the scale of the a room with respect to the specified centroid</dd>
     </dl>
     
     <code>PositionError</code> Extensions
@@ -96,19 +108,17 @@
     <p>This interface defines a geofence breach event, where the device enters or leaves the boundary of the geofence defined
     by the <code>WatchProximitySettings</code> object passed into a <code>getCurrentProximity()</code> or <code>watchProximity()</code>
     method.</p>
-    <dl title='interface WatchProximitySettings' class='idl'>
-    <dt>const unsigned short ENTERING_INSIDE = 0</dt>
-    <dd>If the <code>WatchProximitySettings</code> object is being returned to a <code>CurrentProximityCallback</code> and the device is currently inside the geofence, then 
-    <code>breachDirection</code> is set to this value. If the <code>WatchProximitySettings</code> object is being returned to a <code>=ProximityCallback</code> and the device is currently entering inside the geofence, then 
-    <code>breachDirection</code> is set to this value.</dd>
-    <dt>const unsigned short LEAVING_OUTSIDE = 1</dt>
-    <dd>If the <code>WatchProximitySettings</code> object is being returned to a <code>CurrentProximityCallback</code> and the device is currently outside of the geofence, then 
-    <code>breachDirection</code> is set to this value. If the <code>WatchProximitySettings</code> object is being returned to a <code>=ProximityCallback</code> and the device is currently exiting the geofence, then 
-    <code>breachDirection</code> is set to this value.</dd>
-    <dt>const unsigned short UNKNOWN = 3</dt>
-    <dd><code>breachDirection</code> is set to this value if the User Agent is unable to determine the location of the device relative to the geofence.</dd>
-    <dt>readonly attribute unsigned short breachDirection</dt>
-    <dd>This attribute describes the current status of the device with respect to the geofence.</dd>
+    <dl title='enum ProximityState' class='idl'>
+    <dt>entering</dt>
+    <dd>If the <code>ProximityState</code> object is being returned to a <code>ProximityCallback</code> specified in a <code>getCurrentProximity()</code> function call and the device is currently inside the geofence, then 
+    it is set to this value. If the <code>ProximityState</code> object is being returned to a <code>ProximityCallback</code> specified in a <code>watchProximity()</code> function call and the device is currently entering inside the geofence, then 
+    it is set to this value.</dd>
+    <dt>leaving</dt>
+    <dd>If the <code>ProximityState</code> object is being returned to a <code>ProximityCallback</code> specified in a <code>getCurrentProximity()</code> function call and the device is currently outside of the geofence, then 
+    it is set to this value. If the <code>ProximityState</code> object is being returned to a <code>ProximityCallback</code> specified in a <code>watchProximity()</code> function call and the device is currently exiting the geofence, then 
+    it is set to this value.</dd>
+    <dt>unknown</dt>
+    <dd>The <code>ProximityState</code> object is set to this value if the User Agent is unable to determine the location of the device relative to the geofence.</dd>
     </dl>
 
     <code>Positon</code> Extensions
@@ -117,9 +127,7 @@
     <dl title='partial interface Position' class='idl'>
     <dt>readonly attribute double floorNumber</dt>
     <dd>The floor number corresponding to the building at the current location.  A value of 1.0 would indicate the first floor, 1.5 would indicate mezzanine, etc.</dd>
-    <dt>readonly attribute any mapInfo</dt>
-    <dd><code>mapInfo</code> represents the JSON-serializable data associated with the venue, e.g. {"mapProvider": "Bing", "mapURL": "http://someplace.anywhere"}</dd>
-    <dt>readonly attribute DOMString venueID</dt>
+    <dt>readonly attribute any venueID</dt>
     <dd>Text that describes the venue corresponding to the current device location, e.g. The White House.</dd>
     </dl> 
         
@@ -129,11 +137,11 @@
     <pre class='example'>
 function updateDisplay(position, proxState) {
         // Displays geofence event
-        if (proxState.breachDirection == 0) {
+        if (proxState == "entering") {
             document.write('Entered geofence at ' + position.coords.latitude + ', ' + position.coords.longitude + '&ltbr&gt');
             }
         else {
-            if (proxState.breachDirection == 1) {
+            if (proxState == "leaving") {
                 document.write('Exited geofence at ' + position.coords.latitude + ', ' + position.coords.longitude + '&ltbr&gt');
                 }
             else {
@@ -144,18 +152,14 @@ function updateDisplay(position, proxState) {
         }
 
     // Set geofence
-    var gf = {};
-    gf.latitude = 32.895732;
-    gf.longitude = -117.195861;
-    gf.radius = 10.5;
-    gf.timeout = 80000;
+    var gf = {latitude: 32.895732, longitude: -117.195861, radius: 10.5};
 
     // Request geofence
     var watchProximityId = navigator.geolocation.watchProximity(updateDisplay,gf);
 
     function buttonClickHandler() {
       // Cancel the geofence when the user clicks a button.
-      navigator.geolocation.clearWatch(watchProximityId);
+      navigator.geolocation.clearWatch(watchProximityId.id);
     }
 
     </pre>   
