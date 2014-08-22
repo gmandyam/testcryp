@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+   <form>
+     <input type="button" onclick="getLocationUpdate();"  
+                             value="Watch Update"/>
+     <input type="button" onclick="stopUpdate();"  
+                             value="Stop Update"/>
+   </form>
+<p>A script on this page starts this clock:</p>
+<p id="demo"></p>
+
+
+<script>
+var myVar;
+var battery = navigator.battery || navigator.mozBattery || navigator.webkitBattery;
+function getLocationUpdate(){
+    myVar = setInterval(function(){myTimer()}, 10000);
+
+    function myTimer() {
+        var d = new Date();
+        var t = d.toLocaleTimeString();
+        navigator.geolocation.getCurrentPosition(function(position){document.getElementById("demo").innerHTML += (t + "  " + position.coords.latitude+ "  " + position.coords.longitude + "  " + battery.level * 100 + " %" + "<br/>");});
+    }
+   }
+function stopUpdate(){
+    clearInterval(myVar);
+    document.getElementById("demo").innerHTML += "Done"+ "<br/>";
+    }
+</script>
+
+</body>
+</html>
