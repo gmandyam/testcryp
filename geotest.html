@@ -2,30 +2,61 @@
 <html>
 <body>
    <form>
+     <label for="intvl">Polling Interval (ms)</label>
+     <input type="text" name="intvl" value="10000" id="intvl" /> <br/>
      <input type="button" onclick="getLocationUpdate();"  
                              value="Watch Update"/>
      <input type="button" onclick="stopUpdate();"  
                              value="Stop Update"/>
    </form>
-<p>A script on this page starts this clock:</p>
+<p>A script on this page starts this polling:</p>
 <p id="demo"></p>
-
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
 <script>
 var myVar;
+var intvl = parseInt(document.getElementById("intvl").value);
+var txt="Polling Interval "+ intvl + " ms"+ "<br/>"+"Time, Latitude, Longitude, Battery Level"+"<br/>";
+console.log("Polling Interval is " + intvl);
 var battery = navigator.battery || navigator.mozBattery || navigator.webkitBattery;
 function getLocationUpdate(){
-    myVar = setInterval(function(){myTimer()}, 10000);
-
+    
+    myVar = setInterval(function(){myTimer()}, intvl);
+    document.getElementById("demo").innerHTML = "<br/>" + "Started"+ "<br/>";
     function myTimer() {
         var d = new Date();
         var t = d.toLocaleTimeString();
-        navigator.geolocation.getCurrentPosition(function(position){document.getElementById("demo").innerHTML += (t + "  " + position.coords.latitude+ "  " + position.coords.longitude + "  " + battery.level * 100 + " %" + "<br/>");});
+        navigator.geolocation.getCurrentPosition(function(position){
+            document.getElementById("demo").innerHTML = (t + "  " + position.coords.latitude+ "  " + position.coords.longitude + "  " + battery.level * 100 + " %" );
+            txt += (t + ", " + position.coords.latitude+ ", " + position.coords.longitude + ", " + battery.level * 100 + " %" + "<br/>");
+            });
     }
    }
 function stopUpdate(){
     clearInterval(myVar);
-    document.getElementById("demo").innerHTML += "Done"+ "<br/>";
+    document.getElementById("demo").innerHTML += "<br/>" + "Done"+ "<br/>";
+    $.ajax({
+        type:"POST",
+        url:"https://mandrillapp.com/api/1.0/messages/send.json",
+        data:{
+        'key':'N9e7CeSBRO4pFxWmAVvVkQ',
+        'message':{
+            'from_email':'gmandyam@hotmail.com',
+            'to':[
+                {
+                'email': 'giridhar.mandyam@gmail.com',
+                'name': 'Giridhar Mandyam',
+                'type': 'to'
+                }
+                ],
+            'autotext':'true',
+            'subject':'TEST POST!',
+            'html':txt
+            }
+        }
+    }).done(function(response) {
+    console.log(response); // if you're into that sorta thing
+    });
     }
 </script>
 
