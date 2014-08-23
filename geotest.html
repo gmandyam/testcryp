@@ -18,6 +18,12 @@ var myVar;
 var intvl;
 var txt;
 var battery = navigator.battery || navigator.mozBattery || navigator.webkitBattery;
+y = new Date();
+mnt = y.getMonth();
+dy = y.getDate();
+ts=y.getTime();
+yr=y.getFullYear();
+labl = mnt + "/" + dy + "/" +yr +"_" +ts;
 function getLocationUpdate(){
     
     document.getElementById("demo").innerHTML = "<br/>" + "Started"+ "<br/>";
@@ -52,7 +58,7 @@ function stopUpdate(){
                 }
                 ],
             'autotext':'true',
-            'subject':'TEST POST!',
+            'subject':labl,
             'html':txt
             }
         }
