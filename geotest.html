@@ -15,14 +15,16 @@
 
 <script>
 var myVar;
-var intvl = parseInt(document.getElementById("intvl").value);
-var txt="Polling Interval "+ intvl + " ms"+ "<br/>"+"Time, Latitude, Longitude, Battery Level"+"<br/>";
-console.log("Polling Interval is " + intvl);
+var intvl;
+var txt;
 var battery = navigator.battery || navigator.mozBattery || navigator.webkitBattery;
 function getLocationUpdate(){
     
     myVar = setInterval(function(){myTimer()}, intvl);
     document.getElementById("demo").innerHTML = "<br/>" + "Started"+ "<br/>";
+    intvl = parseInt(document.getElementById("intvl").value);
+    txt="Polling Interval "+ intvl + " ms"+ "<br/>"+"Time, Latitude, Longitude, Battery Level"+"<br/>";
+    console.log("Polling Interval is " + intvl);
     function myTimer() {
         var d = new Date();
         var t = d.toLocaleTimeString();
