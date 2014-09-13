@@ -1,47 +1,46 @@
 <!DOCTYPE html>
-<html xmlns='http://www.w3.org/1999/xhtml' lang='en'>
-  <head>
-    <meta charset='utf-8'/>
-    <title>Picture Settings</title>
-    <script class='remove'>
-      var respecConfig = {
-          specStatus: "WG-DRAFT"
-      ,   shortName:  "coremob-ucr"
-      ,   editors: [
-         {   name:       "Giridhar Mandyam"
-                ,   company:    "Qualcomm Innovation Center, Inc"
-                ,   companyURL: "http://www.qualcomm.com/about/businesses/quicinc" }
-          ]
-      ,   edDraftURI:   "http://coremob.github.com/coremob-ucr/index.html"
-      ,   copyrightStart: 2012
-      ,   noIDLIn:      true
-      ,   wg:           "Media Capture Task Force"
-      ,   wgURI:        "http://www.w3.org/wiki/Media_Capture"
-      ,   wgPublicList: "public-media-capture"
-      ,   wgPatentURI:  "XXX"
-      ,   isRecTrack:   false
-      ,   isNoTrack:    true
-      ,   format:       'markdown'
-      };
-    </script>
-    <script src='./respec-w3c-common-markdown-alpha.js' class='remove' async></script>
-  </head>
-  <body>
-    <section id='sotd'>
-      Comments on this document are welcomed.
-    </section>
-    
-    <section id='abstract'>
-      This document specific settings for a takePicture() method to be defined as part of the Media Capture specification.
-    </section>
-    
-    Introduction
-    ------------
-    
-    <p class=issue>Various proposals have been provided to the Task Force regarding methods for taking a picture that can extend getUserMedia().
-    This proposal focused on picture settings that are compatible with the cameras associated with many handheld devices.  It leverages the takePicture method
-    as described in <a href=http://dvcs.w3.org/hg/dap/raw-file/tip/media-stream-capture/proposals/SettingsAPI_proposal_v4.html>Settings API Version 4</a>. </p>
-    
+<html>
+<body>
+<h1>Dyslexia Questionaire</h1>
+<p>What is dyslexia?</p>
 
-  </body>
+<form>
+<input type="radio" name="answer" value="a learning disability">a learning disability<br>
+<input type="radio" name="answer" value="a type of food">a type of food<br>
+<p>What do dyslexic people have problems with?</p>
+<input type="radio" name="answer1" value="math">math</br>
+<input type="radio" name="answer1" value="reading">reading</br>
+<p>What do dyslexic people need in order to work?</p>
+<input type="radio" name="answer24567" value="A quiet place">A quiet place</br>
+<input type="radio" name="answer24567" value="A playground">A playground</br>
+<p>How would you modify the reading material to improve reading in Dyslexics?</p>
+<input type="radio" name="answerfoofoo" value="using overlays while reading">overlays</br>
+<input type="radio" name="answerfoofoo" value="">using special glasses while reading</br>
+<button type="button" onclick="myFunction()">Submit</button>
+</form>
+
+<script>
+function myFunction(){
+var myForm=document.forms[0];
+var myAnswer=myForm.answer;
+console.log(myAnswer);
+var myAnswer1=myForm.answer1;
+console.log(myAnswer1);
+var myAnswer24567=myForm.answer24567;
+console.log(myAnswer24567);
+var myAnswerfoofoo=myForm.answerfoofoo;
+console.log(myAnswerfoofoo);
+var quizScore=0;
+if(myAnswer.value=="a learning disability")
+	quizScore=quizScore+1;
+if(myAnswer1.value=="reading")
+	quizScore++;
+if(myAnswer24567.value=="A quiet place")
+	quizScore++;
+if(myAnswerfoofoo.value=="using overlays while reading")
+	quizScore++;
+alert("Your score is "+quizScore);
+}
+</script>
+</body>
 </html>
