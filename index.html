@@ -31,13 +31,13 @@ console.log(myAnswer24567);
 var myAnswerfoofoo=myForm.answerfoofoo;
 console.log(myAnswerfoofoo);
 var quizScore=0;
-if(myAnswer.value=="a learning disability")
+if(myAnswer.value[0]=="a learning disability")
 	quizScore=quizScore+1;
-if(myAnswer1.value=="reading")
+if(myAnswer1.value[0]=="reading")
 	quizScore++;
-if(myAnswer24567.value=="A quiet place")
+if(myAnswer24567.value[0]=="A quiet place")
 	quizScore++;
-if(myAnswerfoofoo.value=="using overlays while reading")
+if(myAnswerfoofoo.value[0]=="using overlays while reading")
 	quizScore++;
 alert("Your score is "+quizScore);
 }
