@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<style>
+body {
+    background-color: #0000FF;
+}
+
+h1 {
+    color: green
+;
+    text-align: center;
+}
+
+p {
+    font-family: "Times New Roman";
+    font-size: 20px;
+}
+</style>
+<body>
+<h1>Dyslexia Questionaire</h1>
+<p>What is dyslexia?</p>
+
+<form>
+<input type="radio" name="answer" value="a learning disability">a learning disability<br>
+<input type="radio" name="answer" value="a type of food">a type of food<br>
+<p>What do dyslexic people have problems with?</p>
+<input type="radio" name="answer1" value="arts and crafts">arts and crafts</br>
+<input type="radio" name="answer1" value="reading">reading</br>
+<p>What do dyslexic people need in order to work?</p>
+<input type="radio" name="answer24567" value="A quiet place">A quiet place</br>
+<input type="radio" name="answer24567" value="A playground">A playground</br>
+<p>How would you modify the reading material to improve reading in Dyslexics?</p>
+<input type="radio" name="answerfoofoo" value="using overlays while reading">overlays</br>
+<input type="radio" name="answerfoofoo" value="using special pencils">pencils</br>
+<button type="button" onclick="mySurvey()">Submit</button>
+</form>
+
+<script>
+var opener=window.opener;
+function mySurvey(){
+	opener.postMessage("reason","*");
+	console.log(opener);
+	var myForm=document.forms[0];
+	var myAnswer=myForm.answer;
+	console.log(myAnswer);
+	var myAnswer1=myForm.answer1;
+	console.log(myAnswer1);
+	var myAnswer24567=myForm.answer24567;
+	console.log(myAnswer24567);
+	var myAnswerfoofoo=myForm.answerfoofoo;
+	console.log(myAnswerfoofoo);
+	var quizScore=0;
+	if(myAnswer[0].checked==true)
+		quizScore=quizScore+1;
+	if(myAnswer1[1].checked==true)
+		quizScore++;
+	if(myAnswer24567[0].checked==true)
+		quizScore++;
+	if(myAnswerfoofoo[0].checked==true)
+		quizScore++;
+	alert("Your score is "+quizScore);
+	}
+</script>
+</body>
+</html>
