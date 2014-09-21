@@ -1,0 +1,41 @@
+<body>
+<h1>Calculator</h1>
+<p>Just click on what you want to add or subtract and click on the equals button.</p>
+<form name="calculator">
+<input type="textfield" name="ans" value="">
+<br>
+<input type="button" value="1" onClick="document.calculator.ans.value+='1'">
+<input type="button" value="2" onClick="document.calculator.ans.value+='2'">
+<input type="button" value="3" onClick="document.calculator.ans.value+='3'">
+<input type="button" value="+" onClick="document.calculator.ans.value+='+'">
+<br>
+<input type="button" value="4" onClick="document.calculator.ans.value+='4'">
+<input type="button" value="5" onClick="document.calculator.ans.value+='5'">
+<input type="button" value="6" onClick="document.calculator.ans.value+='6'">
+<input type="button" value="-" onClick="document.calculator.ans.value+='-'">
+
+
+<br>
+<input type="button" value="7" onClick="document.calculator.ans.value+='7'">
+<input type="button" value="8" onClick="document.calculator.ans.value+='8'">
+<input type="button" value="9" onClick="document.calculator.ans.value+='9'">
+<input type="button" value="*" onClick="document.calculator.ans.value+='*'">
+<input type="button" value="/" onClick="document.calculator.ans.value+='/'">
+<br>
+<input type="button" value="0" onClick="document.calculator.ans.value+='0'">
+<input type="reset" value="Reset">
+<input type="button" value="=" onClick="myFunction()">
+<h2>Legend</h2>
+<p>The + sign is to add.
+<p>The - sign is to subtract.
+<p>The * sign is to multiply.
+<p>The / sign is to divide.
+<script>
+window.addEventListener("message", receiveMessage,false);
+function receiveMessage(event){
+	document.calculator.ans.value=eval(document.calculator.ans.value);
+}
+function myFunction(){
+	window.open("survey.html");
+	}
+</script>
