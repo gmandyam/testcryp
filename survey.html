@@ -2,11 +2,11 @@
 <html>
 <style>
 body {
-    background-color: #ADD8E6;
+    background-color: #90EE90;
 }
 
 h1 {
-    color: green
+    color: blue
 ;
     text-align: center;
 }
@@ -18,9 +18,19 @@ p {
 </style>
 <body>
 <h1>Dyslexia Questionaire</h1>
-<p>What is dyslexia?</p>
+
 
 <form>
+<p>Do dyslexic people have trouble spelling?</p>
+<input type="radio" name="anny" value="yes">yes<br>
+<input type="radio" name="anny" value="no">no<br>
+<p> Do dyslexic people write backwards?</p>
+<input type="radio" name="stupos" value="yes">yes<br>
+<input type="radio" name="stupos" value="no">no<br>
+<p>What is a good way to help dyslexics?</p>
+<input type="radio" name="jj" value="Books with big print">Books with big print<br>
+<input type="radio" name="jj" value="Use book reports">Use book reports<br>
+<p>What is dyslexia?</p>
 <input type="radio" name="answer" value="a learning disability">a learning disability<br>
 <input type="radio" name="answer" value="a type of food">a type of food<br>
 <p>What do dyslexic people have problems with?</p>
@@ -38,7 +48,8 @@ p {
 <script>
 var opener=window.opener;
 function mySurvey(){
-	opener.postMessage("reason","*");
+	if(opener !=null)
+		opener.postMessage("reason","*");
 	console.log(opener);
 	var myForm=document.forms[0];
 	var myAnswer=myForm.answer;
@@ -49,6 +60,9 @@ function mySurvey(){
 	console.log(myAnswer24567);
 	var myAnswerfoofoo=myForm.answerfoofoo;
 	console.log(myAnswerfoofoo);
+	var anny=myForm.anny;
+	var stupos=myForm.stupos;
+	var jj=myForm.jj;
 	var quizScore=0;
 	if(myAnswer[0].checked==true)
 		quizScore=quizScore+1;
@@ -58,7 +72,13 @@ function mySurvey(){
 		quizScore++;
 	if(myAnswerfoofoo[0].checked==true)
 		quizScore++;
-	alert("Your score is "+quizScore);
+	if(anny[0].checked==true)
+		quizScore++;
+	if(stupos[1].checked==true)
+		quizScore++;
+	if(jj[0].checked==true);
+		quizScore++;
+	alert("Your awesome,stupendous,unique score is "+quizScore);
 	}
 </script>
 </body>
