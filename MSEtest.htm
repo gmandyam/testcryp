@@ -1,0 +1,282 @@
+
+<!DOCTYPE html>
+<!--
+Copyright 2013 Eric Bidelman
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Author: Eric Bidelman (ebidel@)
+-->
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<title>MSE Test</title>
+<link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+<style>
+::selection {
+  color: #fff;
+  background: pink;
+}
+html, body {
+  overflow: hidden;
+  height: 100%;
+}
+body {
+  margin: 0;
+}
+body {
+  color: #222;
+  font-family: 'Times New Roman', arial, sans-serif;
+  display: -webkit-flex;
+  -webkit-align-items: center;
+  -webkit-justify-content: center;
+  -webkit-flex-direction: column;
+  display: -ms-flex;
+  -ms-align-items: center;
+  -ms-justify-content: center;
+  -ms-flex-direction: column;
+  display: -moz-flex;
+  -moz-align-items: center;
+  -moz-justify-content: center;
+  -moz-flex-direction: column;
+  display: -o-flex;
+  -o-align-items: center;
+  -o-justify-content: center;
+  -o-flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+details {
+  position: absolute;
+  top: 1em;
+  left: 1em;
+  margin: 1em 0;
+  cursor: pointer;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.3);
+  border-radius: 5px;
+  max-width: 600px;
+  font-size: 10pt;
+  z-index: 100;
+}
+details > div {
+  margin: 10px 0;
+}
+details blockquote {
+  font-style: italic;
+}
+pre:not(#log) {
+  background: #eee;
+  font-family: 'Times New Roman', Georgia, Serif;
+  border-radius: 5px;
+  padding: 3px 17px 20px 17px;
+  border: 1px solid #ccc;
+  color: navy;
+}
+#log {
+  margin: 0 1em;
+}
+code {
+  font-weight: bold;
+}
+section {
+  display: -webkit-flex;
+  display: flex;
+}
+</style>
+</head>
+<body>
+
+
+<h3>MSE Test</h3>
+
+<section>
+  <p><video controls autoplay width="320" height="240"></video></p>
+</section>
+
+<section>
+  <pre id="log"></pre>
+</section>
+
+
+<script>
+//var FILE = 'test.webm';
+var FILE = 'car-20120827-89.mp4';
+//var FILE = 'result.mp4';
+var NUM_CHUNKS = 1;
+var video = document.querySelector('video');
+
+window.MediaSource = window.MediaSource || window.WebKitMediaSource;
+if (!!!window.MediaSource) {
+  alert('MediaSource API is not available');
+}
+
+var mediaSource = new MediaSource();
+
+//document.querySelector('[data-num-chunks]').textContent = NUM_CHUNKS;
+
+video.src = window.URL.createObjectURL(mediaSource);
+
+function callback(e) {
+  //var sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vorbis,vp8"');
+  var sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.640028"');
+  //var sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.428015"');
+  console.log('mediaSource readyState: ' + this.readyState);
+  now = new Date().getTime();
+  console.log('Start time (ms) ' + now);
+  GET(FILE, function(uInt8Array) {
+    var xhrTime = new Date().getTime();
+    console.log('XHR request time complete at ' + xhrTime);
+    var file = new Blob([uInt8Array], {type: 'video/webm'});
+    var chunkSize = Math.ceil(file.size / NUM_CHUNKS);
+
+    logger.log('No. of subsegments:' + NUM_CHUNKS);
+    logger.log('Subsegment size (bytes):' + chunkSize + ', Segment size (bytes):' + file.size);
+
+    // Slice the video into NUM_CHUNKS and append each to the media element.
+    var i = 0;
+    if (NUM_CHUNKS > 1) {
+        (function readChunk_(i) {
+            timeReading = new Date().getTime();
+            console.log('Entering readChunk at  ' + timeReading);
+            var reader = new FileReader();
+
+        // Reads aren't guaranteed to finish in the same order they're started in,
+        // so we need to read + append the next chunk after the previous reader
+        // is done (onload is fired).
+            reader.onload = function(e) {
+                try{
+                    if (i == 0){
+                        curTime = new Date().getTime();
+                        logger.log('Time before append is (ms):  ' + curTime);
+                        sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
+                        nexTime = new Date().getTime();
+                        logger.log('Time after append is (ms):  ' + nexTime);
+                        logger.log('Elapsed time (ms) for first append:  ' + (nexTime-curTime));
+                        }
+                    else{
+                        tme = new Date().getTime();
+                        setTimeout(function(){
+                            sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
+                            tme=new Date().getTime();
+                            console.log('Append complete time is ' + tme);
+                            }, 30000);
+                        tme2 = new Date().getTime();
+                        }
+                    console.log('Video playout time is ' + video.currentTime);
+                    }
+                catch(err)
+                    {
+                    console.log('Append error ' + err);
+                    console.log('Video playout time is ' + video.currentTime);
+                    }
+                appendTime = new Date().getTime();
+                console.log('Append time for chunk ' + i + ' is ' + appendTime);
+                logger.log('Appending subsegment:' + i);
+                if (i == NUM_CHUNKS - 1) {
+                    mediaSource.endOfStream();
+                } else {
+                    if (video.paused) {
+                        video.play(); // Start playing after 1st chunk is appended.
+                    }
+                console.log('The source buffer updating state is ' + sourceBuffer.updating);
+                setTimeout(readChunk_(++i),60000);
+                }
+            };
+
+            var startByte = chunkSize * i;
+            var chunk = file.slice(startByte, startByte + chunkSize);
+    
+            reader.readAsArrayBuffer(chunk);
+            })(i);  // Start the recursive call by self calling.
+        }
+    else{
+        sourceBuffer.appendBuffer(uInt8Array);
+        appendTime = new Date().getTime();
+        sourceBuffer.addEventListener('udpate',function(){console.log('Append time ' + Date().getTime());});
+        logger.log('Append time for segment is ' + appendTime);
+        }
+    });
+  ltr = new Date().getTime();
+  logger.log('Start time: ' + now);
+  console.log('End time ' + ltr);
+}
+
+mediaSource.addEventListener('sourceopen', callback, false);
+mediaSource.addEventListener('webkitsourceopen', callback, false);
+
+mediaSource.addEventListener('webkitsourceended', function(e) {
+  logger.log('mediaSource readyState: ' + this.readyState);
+}, false);
+
+function GET(url, callback) {
+  console.log('Hit the XHR subroutine');
+  var xhr = new XMLHttpRequest();
+  xhrStart = new Date().getTime();
+  xhr.open('GET', url, true);
+  xhr.responseType = 'arraybuffer';
+  xhr.send();
+
+  xhr.onload = function(e) {
+    xhrEnd = new Date().getTime();
+    logger.log('Total time (ms) for XHR fetch: ' + (xhrEnd-xhrStart));
+    if (xhr.status != 200) {
+      alert("Unexpected status code " + xhr.status + " for " + url);
+      return false;
+    }
+    dmy = new Uint8Array(xhr.response);
+    logger.log('Size of XHR response (bytes): ' + dmy.length);
+    xhrEnd = new Date().getTime();
+    logger.log('Time at which XHR response is returned (ms) is ' + xhrEnd);
+    callback(dmy);
+  };
+}
+</script>
+<script>
+function Logger(id) {
+  this.el = document.getElementById('log');
+}
+Logger.prototype.log = function(msg) {
+  var fragment = document.createDocumentFragment();
+  fragment.appendChild(document.createTextNode(msg));
+  fragment.appendChild(document.createElement('br'));
+  this.el.appendChild(fragment);
+};
+
+Logger.prototype.clear = function() {
+  this.el.textContent = '';
+};
+
+var logger = new Logger('log');
+</script>
+<script>
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-22014378-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+<!--[if IE]>
+<script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+<script>CFInstall.check({mode: 'overlay'});</script>
+<![endif]-->
+</body>
+</html>
