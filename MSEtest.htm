@@ -115,7 +115,7 @@ section {
 
 <script>
 //var FILE = 'test.webm';
-var FILE = 'car-20120827-89.mp4';
+var FILE = 'oops-20120802-88.mp4';
 //var FILE = 'result.mp4';
 var NUM_CHUNKS = 1;
 var video = document.querySelector('video');
@@ -230,6 +230,9 @@ function GET(url, callback) {
   xhr.open('GET', url, true);
   xhr.responseType = 'arraybuffer';
   xhr.send();
+  xhr.onreadystatechange = function(){
+    console.log('Status is ' + xhr.status);
+    }
 
   xhr.onload = function(e) {
     xhrEnd = new Date().getTime();
