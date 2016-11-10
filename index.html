@@ -1,46 +1,176 @@
-<!DOCTYPE html>
 <html>
-<body>
-<h1>Dyslexia Questionaire</h1>
-<p>What is dyslexia?</p>
+<head>
+  <title>Blockchain Demo</title>
+  <style type="text/css">
+  .ours {
+      color: #0000ff;
+  }
+  .theirs {
+      color: #ff0000;
+  }
+  .system {
+      color: #333333;
+      font-style: italic;
+  }
+  </style>
+  <script type="text/javascript">
+  var alg_name = "RSASSA-PKCS1-v1_5"; 
+    var algorithmKeyGen = {
+        name: alg_name,
+        // RsaHashedKeyGenParams
+        modulusLength: 2048,
+        publicExponent: new Uint8Array([0x01, 0x00, 0x01]),  // Equivalent to 65537
+        hash: {
+            name: "SHA-256"
+            }
+        };
+    var algorithmSign = {
+        name: alg_name
+        };
+    var hashalg = {
+        name: "SHA-256"
+        };
+   
+    var block_idx=0;
+    var prevhash = "";
+    var blockchain = new Array(100);
+    for (i=0;i<100;i++){
+        blockchain[i] = new Array(2);
+        }
+        
+    function init()
+    {
+        var verifier = document.getElementById('verifier').contentWindow;
+        // disable button
+        $('enter').disabled = false;
 
-<form>
-<input type="radio" name="answer" value="a learning disability">a learning disability<br>
-<input type="radio" name="answer" value="a type of food">a type of food<br>
-<p>What do dyslexic people have problems with?</p>
-<input type="radio" name="answer1" value="math">math</br>
-<input type="radio" name="answer1" value="reading">reading</br>
-<p>What do dyslexic people need in order to work?</p>
-<input type="radio" name="answer24567" value="A quiet place">A quiet place</br>
-<input type="radio" name="answer24567" value="A playground">A playground</br>
-<p>How would you modify the reading material to improve reading in Dyslexics?</p>
-<input type="radio" name="answerfoofoo" value="using overlays while reading">overlays</br>
-<input type="radio" name="answerfoofoo" value="">using special glasses while reading</br>
-<button type="button" onclick="myFunction()">Submit</button>
-</form>
+        // enter handler
+        $('enter').onclick = function() {
+            if (!$('username').value) {
+                alert('Please enter a username');
+                return;
+                }
+            username = $('username').value;
+            if (!$('password').value) {
+                alert('Please enter a password');
+                return;
+                }
+            username = $('username').value;   
+            password = $('password').value; 
+            ts = Date.now();
+            verifier.postMessage(username + "," + password + "." + ts, 'http://localhost/WebCryptoVerify.html') ;     
+            console("username is "+ username + ", password is " + password + ", timestamp is " + ts);
+            blockchain[block_idx][0]=username+"|"+password+"|"+ts;
+            console("Block " + block_idx + " transaction is " + blockchain[block_idx][0]);
+            window.crypto.subtle.generateKey(algorithmKeyGen, false, ["sign"]).then(
+                function(key) {
+                    var dataAB = str2ab(username+"|"+password+"|"+ts);
+                    var dataAB_str = username+"|"+password+"|"+ts;
+                    var dataAB_len = 2*dataAB_str.length;
+                    if (block_idx == 0){
+                        var hashdata = str2ab(username+"|"+password+"|"+ts);
+                        var hashdata_str = username+"|"+password+"|"+ts;
+                        var hashdata_len = 2*hashdata_str.length;
+                        }
+                        else
+                            {
+                            var hashdata = str2ab(username+"|"+password+"|"+ts+prevhash);
+                            var hashdata_str = username+"|"+password+"|"+ts;
+                            var hashdata_len = 2*hashdata_str.length;
+                            }
+                    t1 = Date.now();
+                    window.crypto.subtle.sign(algorithmSign, key.privateKey, dataAB).then(function(signature){
+                        //returns an ArrayBuffer containing the signature
+                            t2=Date.now();
+                            console("Signature: " + ab2str(new Uint8Array(signature)));
+                            tput = 1000*dataAB_len/(t2-t1);
+                            console("Sign throughput is  " + tput.toString() + " Mbps");
+                        });
+                    t1 = Date.now();
+                    window.crypto.subtle.digest(hashalg,hashdata).then(function(hash){
+                        t2=Date.now();
+                        console("Hash:  " + ab2str(new Uint8Array(hash)));
+                        tput = 1000*hashdata_len/(t2-t1);
+                        console("Hash throughput is  " + tput.toString() + " Mbps");
+                        prevhash = ab2str(hash);
+                        console("   ");
+                        });
+                    });
+                    block_idx = block_idx+1;
+            };
+        };
 
-<script>
-function myFunction(){
-var myForm=document.forms[0];
-var myAnswer=myForm.answer;
-console.log(myAnswer);
-var myAnswer1=myForm.answer1;
-console.log(myAnswer1);
-var myAnswer24567=myForm.answer24567;
-console.log(myAnswer24567);
-var myAnswerfoofoo=myForm.answerfoofoo;
-console.log(myAnswerfoofoo);
-var quizScore=0;
-if(myAnswer.value=="a learning disability")
-	quizScore=quizScore+1;
-if(myAnswer1.value=="reading")
-	quizScore++;
-if(myAnswer24567.value=="A quiet place")
-	quizScore++;
-if(myAnswerfoofoo.value=="using overlays while reading")
-	quizScore++;
-alert("Your score is "+quizScore);
-}
+    function str2ab(str) {
+        var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
+        var bufView = new Uint16Array(buf);
+        for (var i=0, strLen=str.length; i < strLen; i++) {
+            bufView[i] = str.charCodeAt(i);
+        }
+        return buf;
+        }
+        
+    function ab2str(buf) {
+        return String.fromCharCode.apply(null, new Uint16Array(buf));
+        }
+
+    // helper function
+    function $(id){ return document.getElementById(id); }
+
+    // function to display status and message output
+    function console(message)
+    {
+        // normal messages are of the form "handle|text"
+        var msg = message;
+
+        var pre = document.createElement("pre");
+        pre.style.wordWrap = "break-word";
+        pre.style.padding = "0 5px";
+        pre.style.margin = "0";
+        pre.innerHTML = msg;
+
+        // "system" messages
+
+        // did we receive a handle?
+        if (msg.length > 0) {
+            // if so, then prepend the handle to the message content
+            var h = document.createElement("span");
+            //h.innerHTML = msg + ": ";
+
+            // is it ours or theirs
+            if (msg == msg) {
+                h.className = "ours";
+            } else {
+                h.className = "theirs";
+            }
+            pre.insertBefore(h, pre.firstChild);
+        }
+        // add the new message at the end
+        $('console').appendChild(pre);
+
+        // scroll to bottom of console
+        $('console').scrollTop = $('console').scrollHeight;
+    }
+
 </script>
+<body onload="init()">
+
+<h3>HTML Blockchain Demo</h3>
+
+<h4 id="error" style="color:#ff0000"></h4>
+<div>
+    <div id="console" style="height:300px; overflow:scroll; border:1px solid black"></div>
+</div>
+<div style="padding-top:10px">
+    <p id="demo"></p>
+    <label>Username:</label><input id="username" size="25" value="">
+    <label>Password:</label><input id="password" size="25" value="">
+    <button id="enter">Enter</button>
+</div>
+<div>
+<p>        </p>
+</div>
+<iframe id="verifier" src="http://localhost/WebCryptoVerify.html" width="800" height="300">
+<p>Your browser does not support iframes.</p>
+</iframe>
 </body>
 </html>
