@@ -78,17 +78,17 @@
                             var hashdata_str = username+"|"+password+"|"+ts;
                             var hashdata_len = 2*hashdata_str.length;
                             }
-                    t1 = Date.now();
+                    t1 = performance.now();
                     window.crypto.subtle.sign(algorithmSign, key.privateKey, dataAB).then(function(signature){
                         //returns an ArrayBuffer containing the signature
-                            t2=Date.now();
+                            t2=performance.now();
                             console("Signature: " + ab2str(new Uint8Array(signature)));
                             tput = 1000*dataAB_len/(t2-t1);
                             console("Sign throughput is  " + tput.toString() + " Mbps");
                         });
-                    t1 = Date.now();
+                    t1 = performance.now();
                     window.crypto.subtle.digest(hashalg,hashdata).then(function(hash){
-                        t2=Date.now();
+                        t2=performance.now();
                         console("Hash:  " + ab2str(new Uint8Array(hash)));
                         tput = 1000*hashdata_len/(t2-t1);
                         console("Hash throughput is  " + tput.toString() + " Mbps");
