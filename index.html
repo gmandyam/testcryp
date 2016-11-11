@@ -88,7 +88,6 @@
                             tput = 1000*dataAB_len/(t2-t1);
                             console("Sign throughput is  " + tput.toString() + " Mbps");
                         });
-                    t1 = performance.now();
                     window.crypto.subtle.digest(hashalg,hashdata).then(function(hash){
                         t2=performance.now();
                         console("Hash:  " + ab2str(new Uint8Array(hash)));
